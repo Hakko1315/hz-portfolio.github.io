@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Visualisation — Hakim Zoghlami</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+ 
+/* ── BARRE DU HAUT ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: rgba(10,10,10,0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  z-index: 10;
+}
+ 
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+ 
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  padding: 8px 18px;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+.back-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
+ 
+.doc-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  max-width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+ 
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+ 
+.confidential-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 120, 120, 0.9);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+ 
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: #0071e3;
+}
+ 
+/* ── ZONE PDF ── */
+.pdf-wrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+ 
+/* L'iframe prend tout l'espace, scrollable normalement */
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+ 
+/* ── FILIGRANES — positionnés en absolu, pointer-events none ── */
+.watermark-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* laisse passer tous les clics/scroll vers l'iframe */
+  z-index: 5;
+}
+ 
+/* Chaque filigrane est positionné manuellement en % pour être centré */
+.wm {
+  position: absolute;
+  left: 40%;
+  transform: translateX(-50%) rotate(-35deg);
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  font-weight: 800;
+  color: rgba(0, 113, 227, 0.15);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+ 
+.wm-top    { top: 15%; }
+.wm-middle { top: 50%; transform: translateX(-50%) translateY(-50%) rotate(-35deg); }
+.wm-bottom { bottom: 15%; }
+ 
+/* ── BARRE DU BAS ── */
+.bottombar {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 10px;
+  background: rgba(10,10,10,0.95);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+ 
+<!-- BARRE DU HAUT -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="back-btn" onclick="history.back()">← Retour au portfolio</a>
+    <span class="doc-title" id="doc-title">Document</span>
+  </div>
+  <div class="topbar-right">
+    <span class="confidential-badge">🔒 Confidentiel</span>
+    <span class="logo">HZ</span>
+  </div>
+</div>
+ 
+<!-- VISIONNEUSE PDF -->
+<div class="pdf-wrapper" oncontextmenu="return false;">
+ 
+  <!-- PDF — scrollable, lisible normalement -->
+  <iframe id="pdf-frame" src="" oncontextmenu="return false;"></iframe>
+ 
+  <!-- Filigranes par dessus, sans bloquer la lecture -->
+  <div class="watermark-layer">
+    <div class="wm wm-top">© Hakim Zoghlami</div>
+    <div class="wm wm-middle">© Hakim Zoghlami</div>
+    <div class="wm wm-bottom">© Hakim Zoghlami</div>
+  </div>
+ 
+</div>
+ 
+<!-- BARRE DU BAS -->
+<div class="bottombar">
+  © Hakim Zoghlami &nbsp;·&nbsp; Document confidentiel &nbsp;·&nbsp; Reproduction interdite
+</div>
+ 
+<script>
+  /* Chargement du PDF */
+  const params = new URLSearchParams(window.location.search);
+  const file  = params.get('file')  || '';
+  const title = params.get('title') || 'Document';
+ 
+  document.getElementById('doc-title').textContent = title;
+  /* #toolbar=0 masque le bouton télécharger du viewer natif */
+  document.getElementById('pdf-frame').src = file + '#toolbar=0&navpanes=0&scrollbar=1';
+ 
+  /* Bloquer clic droit */
+  document.addEventListener('contextmenu', e => e.preventDefault());
+ 
+  /* Bloquer raccourcis clavier */
+  document.addEventListener('keydown', e => {
+    const blocked = ['s', 'p', 'u', 'a', 'c'];
+    if ((e.ctrlKey || e.metaKey) && blocked.includes(e.key.toLowerCase())) {
+      e.preventDefault();
+      return false;
+    }
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    if (e.key === 'PrintScreen') {
+      e.preventDefault();
+      navigator.clipboard.writeText('').catch(() => {});
+      return false;
+    }
+  });
+ 
+  /* Bloquer sélection texte et drag */
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('dragstart',   e => e.preventDefault());
+</script>
+ 
+</body>
+</html>

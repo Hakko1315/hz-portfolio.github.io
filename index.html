@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hakim Zoghlami — Data Analyst</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+--black: #0a0a0a;
+--white: #ffffff;
+--light: #f5f5f7;
+--blue: #0071e3;
+--blue-dark: #004fa3;
+--muted: rgba(255,255,255,0.45);
+}
+ 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+ 
+body {
+font-family: 'Inter', sans-serif;
+background: var(--black);
+color: var(--white);
+overflow-x: hidden;
+}
+ 
+/* ── NAV ── */
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px 60px;
+background: rgba(10,10,10,0.78);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+ 
+.nav-logo {
+font-family: 'Syne', sans-serif;
+font-weight: 800;
+font-size: 1.1rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(--white);
+text-decoration: none;
+}
+ 
+.nav-links {
+display: flex;
+gap: 36px;
+list-style: none;
+}
+ 
+.nav-links a {
+color: rgba(255,255,255,0.55);
+text-decoration: none;
+font-size: 0.82rem;
+letter-spacing: 0.5px;
+transition: color 0.2s;
+}
+ 
+.nav-links a:hover { color: var(--white); }
+ 
+/* ── HERO ── */
+#hero {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: justify;
+padding: 100px 40px 60px;
+position: relative;
+background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,113,227,0.13) 0%, transparent 70%);
+}
+ 
+.hero-label {
+font-size: 0.72rem;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--blue);
+margin-bottom: 28px;
+opacity: 0;
+animation: fadeUp 0.8s ease 0.2s forwards;
+}
+ 
+#hero h1 {
+font-family: 'Syne', sans-serif;
+font-size: clamp(3.5rem, 10vw, 8rem);
+font-weight: 800;
+line-height: 0.95;
+letter-spacing: -2px;
+margin-bottom: 32px;
+opacity: 0;
+animation: fadeUp 0.9s ease 0.4s forwards;
+}
+ 
+#hero h1 span { color: var(--blue); }
+ 
+.hero-sub {
+font-size: clamp(0.95rem, 2vw, 1.15rem);
+font-weight: 300;
+color: var(--muted);
+max-width: 560px;
+line-height: 1.75;
+margin-bottom: 52px;
+opacity: 0;
+animation: fadeUp 1s ease 0.6s forwards;
+}
+ 
+.hero-cta {
+display: flex;
+gap: 16px;
+flex-wrap: wrap;
+justify-content: center;
+opacity: 0;
+animation: fadeUp 1s ease 0.8s forwards;
+}
+ 
+.btn-primary {
+background: var(--blue);
+color: var(--white);
+text-decoration: none;
+padding: 14px 32px;
+border-radius: 100px;
+font-size: 0.88rem;
+font-weight: 500;
+transition: background 0.2s, transform 0.2s;
+}
+ 
+.btn-primary:hover { background: var(--blue-dark); transform: scale(1.03); }
+ 
+.btn-ghost {
+background: transparent;
+color: var(--white);
+text-decoration: none;
+padding: 14px 32px;
+border-radius: 100px;
+font-size: 0.88rem;
+font-weight: 500;
+border: 1px solid rgba(255,255,255,0.22);
+transition: border-color 0.2s, transform 0.2s;
+}
+ 
+.btn-ghost:hover { border-color: rgba(255,255,255,0.65); transform: scale(1.03); }
+ 
+.hero-scroll {
+position: absolute;
+bottom: 36px; left: 50%;
+transform: translateX(-50%);
+display: flex; flex-direction: column; align-items: center; gap: 8px;
+color: rgba(255,255,255,0.25);
+font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+animation: bounce 2s ease infinite;
+}
+ 
+.scroll-line {
+width: 1px; height: 40px;
+background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+}
+ 
+/* ── LAYOUT ── */
+.divider {
+width: 100%; height: 1px;
+background: rgba(255,255,255,0.07);
+max-width: 1100px;
+margin: 0 auto;
+}
+ 
+.section-wrap {
+padding: 120px 60px;
+max-width: 1100px;
+margin: 0 auto;
+}
+ 
+.section-tag {
+display: inline-block;
+font-size: 0.68rem;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--blue);
+margin-bottom: 16px;
+}
+ 
+.section-title {
+font-family: 'Syne', sans-serif;
+font-size: clamp(2rem, 5vw, 3.2rem);
+font-weight: 800;
+line-height: 1.05;
+letter-spacing: -1px;
+margin-bottom: 18px;
+}
+ 
+/* ── A PROPOS ── */
+.apropos-header { margin-bottom: 48px; }
+ 
+.apropos-banner {
+position: relative;
+width: 100%;
+height: 380px;
+border-radius: 18px;
+overflow: hidden;
+margin-bottom: 56px;
+}
+ 
+.apropos-banner img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center top;
+filter: brightness(0.6) grayscale(10%);
+transition: filter 0.4s, transform 0.6s;
+}
+ 
+.apropos-banner:hover img {
+filter: brightness(0.75) grayscale(0%);
+transform: scale(1.03);
+}
+ 
+.apropos-banner-overlay {
+position: absolute;
+inset: 0;
+background: linear-gradient(to top, rgba(10,10,10,0.6) 0%, transparent 50%);
+}
+ 
+.apropos-text {
+max-width: 720px;
+margin: 0 auto;
+text-align: justify;
+}
+ 
+.apropos-text p {
+font-size: 0.98rem;
+font-weight: 300;
+color: rgba(255,255,255,0.6);
+line-height: 1.85;
+margin-bottom: 16px;
+}
+ 
+.apropos-text p strong { color: var(--white); font-weight: 500; }
+ 
+.apropos-stats {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 14px;
+margin-top: 48px;
+}
+ 
+.stat-box {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 14px;
+padding: 20px;
+text-align: center;
+}
+ 
+.stat-num {
+font-family: 'Syne', sans-serif;
+font-size: 1.9rem;
+font-weight: 800;
+color: var(--blue);
+}
+ 
+.stat-label { font-size: 0.74rem; color: rgba(255,255,255,0.35); margin-top: 4px; }
+ 
+/* ── PARCOURS ── */
+.parcours-intro {
+font-size: 0.98rem;
+font-weight: 300;
+color: var(--muted);
+line-height: 1.8;
+max-width: 620px;
+margin-bottom: 48px;
+}
+ 
+.parcours-banner {
+position: relative;
+width: 100%;
+height: 220px;
+border-radius: 18px;
+overflow: hidden;
+margin-bottom: 64px;
+}
+ 
+.parcours-banner img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center;
+filter: brightness(0.5) grayscale(20%);
+transition: filter 0.4s, transform 0.6s;
+}
+ 
+.parcours-banner:hover img {
+filter: brightness(0.65) grayscale(0%);
+transform: scale(1.03);
+}
+ 
+.parcours-banner-overlay {
+position: absolute;
+inset: 0;
+display: flex;
+align-items: flex-end;
+padding: 28px 32px;
+background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+}
+ 
+.parcours-banner-label {
+font-family: 'Syne', sans-serif;
+font-size: 1.1rem;
+font-weight: 700;
+color: var(--white);
+letter-spacing: 1px;
+}
+ 
+.parcours-banner-label span {
+display: block;
+font-family: 'Inter', sans-serif;
+font-size: 0.72rem;
+font-weight: 300;
+color: rgba(255,255,255,0.55);
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 4px;
+}
+ 
+.timeline { position: relative; padding-left: 40px; }
+ 
+.timeline::before {
+content: '';
+position: absolute;
+left: 0; top: 8px; bottom: 8px;
+width: 1px;
+background: linear-gradient(to bottom, var(--blue), rgba(0,113,227,0.06));
+}
+ 
+.timeline-item {
+position: relative;
+margin-bottom: 56px;
+opacity: 0;
+transform: translateX(-20px);
+transition: opacity 0.6s ease, transform 0.6s ease;
+}
+ 
+.timeline-item.visible { opacity: 1; transform: translateX(0); }
+ 
+.timeline-dot {
+position: absolute;
+left: -47px; top: 6px;
+width: 14px; height: 14px;
+border-radius: 50%;
+background: var(--blue);
+border: 2px solid var(--black);
+box-shadow: 0 0 0 3px rgba(0,113,227,0.3);
+}
+ 
+.tl-meta {
+font-size: 0.72rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(--blue);
+margin-bottom: 8px;
+}
+ 
+.tl-title {
+font-family: 'Syne', sans-serif;
+font-size: 1.35rem;
+font-weight: 700;
+margin-bottom: 3px;
+}
+ 
+.tl-org { font-size: 0.86rem; color: rgba(255,255,255,0.35); margin-bottom: 14px; }
+ 
+.tl-body {
+font-size: 0.9rem;
+font-weight: 300;
+color: rgba(255,255,255,0.55);
+line-height: 1.8;
+max-width: 600px;
+}
+ 
+.tl-transition {
+font-size: 0.9rem;
+font-weight: 300;
+font-style: italic;
+color: rgba(255,255,255,0.3);
+margin: -30px 0 50px 0;
+padding-left: 40px;
+}
+ 
+/* FORMATIONS */
+.edu-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+margin-top: 50px;
+}
+ 
+.edu-card {
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 16px;
+padding: 26px;
+transition: border-color 0.3s, background 0.3s;
+}
+ 
+.edu-card:hover {
+border-color: rgba(0,113,227,0.35);
+background: rgba(0,113,227,0.05);
+}
+ 
+.edu-year { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.edu-degree { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; line-height: 1.35; }
+.edu-school { font-size: 0.76rem; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+.edu-desc { font-size: 0.82rem; font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.7; }
+ 
+/* ── COMPETENCES ── */
+#competences-outer { background: var(--light); }
+ 
+.comp-intro {
+font-size: 0.96rem;
+font-weight: 300;
+color: rgba(0,0,0,0.5);
+line-height: 1.8;
+max-width: 600px;
+margin-bottom: 56px;
+}
+ 
+.comp-block { margin-bottom: 40px; }
+ 
+.comp-block-title {
+font-family: 'Syne', sans-serif;
+font-size: 0.75rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 2px;
+color: rgba(0,0,0,0.35);
+margin-bottom: 16px;
+}
+ 
+.skills-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 10px;
+}
+ 
+.skill-card {
+background: var(--white);
+border-radius: 14px;
+padding: 20px;
+box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+cursor: pointer;
+border: 1.5px solid transparent;
+}
+ 
+.skill-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+border-color: rgba(0,113,227,0.3);
+}
+ 
+.skill-card-icon { font-size: 1.5rem; margin-bottom: 10px; }
+ 
+.skill-card-title {
+font-family: 'Syne', sans-serif;
+font-size: 0.76rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: var(--black);
+margin-bottom: 10px;
+}
+ 
+.skill-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+ 
+.stag {
+font-size: 0.73rem;
+font-weight: 500;
+padding: 3px 10px;
+border-radius: 100px;
+}
+ 
+.stag-maitrise {
+background: #eef4fd;
+color: var(--blue);
+border: 1px solid rgba(0,113,227,0.18);
+}
+ 
+.stag-progress {
+background: #f5f0ff;
+color: #6b3fa0;
+border: 1px solid rgba(107,63,160,0.18);
+}
+ 
+.skill-hint {
+font-size: 0.72rem;
+color: rgba(0,0,0,0.25);
+text-align: center;
+margin-top: -24px;
+margin-bottom: 32px;
+font-style: italic;
+}
+ 
+/* ── PROJETS ── */
+.projets-intro {
+font-size: 0.98rem;
+font-weight: 300;
+color: var(--muted);
+line-height: 1.8;
+max-width: 600px;
+margin-bottom: 48px;
+}
+ 
+.projets-list { display: flex; flex-direction: column; gap: 14px; }
+ 
+.projet-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 14px;
+padding: 22px 28px;
+text-decoration: none;
+color: var(--white);
+transition: border-color 0.3s, background 0.3s, transform 0.2s;
+cursor: pointer;
+}
+ 
+.projet-item:hover {
+border-color: rgba(0,113,227,0.4);
+background: rgba(0,113,227,0.06);
+transform: translateX(6px);
+}
+ 
+.projet-left { display: flex; align-items: center; gap: 20px; }
+ 
+.projet-num {
+font-family: 'Syne', sans-serif;
+font-size: 1.1rem;
+font-weight: 800;
+color: rgba(0,113,227,0.35);
+min-width: 28px;
+}
+ 
+.projet-title {
+font-family: 'Syne', sans-serif;
+font-size: 0.9rem;
+font-weight: 600;
+line-height: 1.4;
+}
+ 
+.projet-arrow {
+font-size: 0.8rem;
+color: rgba(255,255,255,0.25);
+transition: color 0.2s, transform 0.2s;
+white-space: nowrap;
+}
+ 
+.projet-item:hover .projet-arrow {
+color: var(--blue);
+transform: translateX(4px);
+}
+ 
+.projet-pdf-note {
+font-size: 0.74rem;
+color: rgba(255,255,255,0.22);
+margin-top: 16px;
+font-style: italic;
+}
+ 
+/* ── CONTACT ── */
+#contact {
+text-align: center;
+padding: 140px 40px;
+background: linear-gradient(to bottom, transparent, rgba(0,113,227,0.07) 50%, transparent);
+}
+ 
+#contact .section-title { font-size: clamp(2.2rem, 5vw, 4rem); margin-bottom: 20px; }
+ 
+.contact-text {
+font-size: 0.98rem;
+font-weight: 300;
+color: var(--muted);
+max-width: 520px;
+margin: 0 auto 48px;
+line-height: 1.8;
+}
+ 
+.contact-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+ 
+.contact-chip {
+display: flex; align-items: center; gap: 8px;
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.1);
+border-radius: 100px;
+padding: 12px 24px;
+font-size: 0.84rem;
+color: rgba(255,255,255,0.7);
+text-decoration: none;
+transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+ 
+.contact-chip:hover {
+background: rgba(0,113,227,0.18);
+border-color: rgba(0,113,227,0.45);
+color: var(--white);
+}
+ 
+/* ── FOOTER ── */
+footer {
+text-align: center;
+padding: 28px;
+border-top: 1px solid rgba(255,255,255,0.06);
+font-size: 0.72rem;
+color: rgba(255,255,255,0.16);
+letter-spacing: 1px;
+}
+ 
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(24px); }
+to { opacity: 1; transform: translateY(0); }
+}
+ 
+@keyframes bounce {
+0%,100% { transform: translateX(-50%) translateY(0); }
+50% { transform: translateX(-50%) translateY(8px); }
+}
+ 
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+nav { padding: 18px 24px; }
+.nav-links { display: none; }
+.section-wrap { padding: 80px 24px; }
+.apropos-banner { height: 260px; }
+.apropos-stats { grid-template-columns: 1fr 1fr; }
+.edu-grid { grid-template-columns: 1fr; }
+.skills-grid { grid-template-columns: 1fr 1fr; }
+.parcours-banner { height: 160px; }
+}
+ 
+@media (max-width: 480px) {
+.skills-grid { grid-template-columns: 1fr; }
+.apropos-stats { grid-template-columns: 1fr 1fr; }
+}
+ 
+/* ── POPUP COMPÉTENCES ── */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.93) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+ 
+#skill-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+ 
+#skill-overlay.active { display: flex; }
+ 
+#skill-popup {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px;
+  width: min(500px, 90vw);
+  max-height: 82vh;
+  overflow-y: auto;
+  position: relative;
+  animation: popIn 0.22s ease;
+  color: #0a0a0a;
+}
+ 
+.sp-close {
+  position: absolute;
+  top: 18px; right: 20px;
+  background: #f2f2f2;
+  border: none;
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #555;
+  transition: background 0.15s;
+}
+.sp-close:hover { background: #e0e0e0; }
+ 
+.sp-icon { font-size: 2.2rem; margin-bottom: 12px; }
+ 
+.sp-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #0a0a0a;
+  margin-bottom: 5px;
+}
+ 
+.sp-subtitle {
+  font-size: 0.72rem;
+  color: #0071e3;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+ 
+.sp-sec-label {
+  font-size: 0.65rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 10px;
+  margin-top: 18px;
+}
+ 
+.sp-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+ 
+.sp-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-size: 0.88rem;
+  color: #333;
+  line-height: 1.6;
+}
+ 
+.sp-list li::before {
+  content: '';
+  min-width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0071e3;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+ 
+.sp-list.purple li::before { background: #6b3fa0; }
+ 
+.sp-divider {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 18px 0 2px;
+}
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">HZ</a>
+  <ul class="nav-links">
+    <li><a href="#apropos-wrap">À propos</a></li>
+    <li><a href="#parcours-wrap">Parcours</a></li>
+    <li><a href="#competences-outer">Compétences</a></li>
+    <li><a href="#projets-wrap">Projets</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+ 
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-label">Data Analyst junior &nbsp;&middot;&nbsp; 1 an d'expérience &nbsp;&middot;&nbsp; Marseille</p>
+  <h1>Hakim<br/><span>Zoghlami</span></h1>
+  <p class="hero-sub">Les données ne prennent de valeur que lorsqu'elles deviennent compréhensibles. À travers les statistiques, la cartographie et l'analyse, je cherche à transformer l'information en outil d'aide à la décision.</p>
+  <div class="hero-cta">
+    <a href="#parcours-wrap" class="btn-primary">Voir mon parcours</a>
+    <a href="#contact" class="btn-ghost">Me contacter</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+ 
+<div class="divider"></div>
+ 
+<!-- A PROPOS -->
+<div class="section-wrap" id="apropos-wrap">
+  <div class="apropos-header">
+    <span class="section-tag">Qui suis-je</span>
+    <h2 class="section-title">Pense en données,<br/>agit avec impact.</h2>
+  </div>
+ 
+  <div class="apropos-banner">
+    <img src="photo1.jpeg" alt="Hakim Zoghlami" />
+    <div class="apropos-banner-overlay"></div>
+  </div>
+ 
+  <div class="apropos-text">
+    <p>Titulaire d'un <strong>Master en Mathématiques Appliquées aux Statistiques</strong> à Aix-Marseille Université, j'ai développé une approche de l'analyse de données à la croisée des statistiques, de l'informatique et des sciences humaines. Mon parcours m'a permis de travailler sur des problématiques concrètes liées aux politiques publiques, à la cartographie décisionnelle et à l'exploitation de données territoriales au sein de la Ville de Marseille.</p>
+    <p>C'est au cours de mes études que les statistiques ont éveillé ma curiosité, notamment à travers les travaux de recherche appliquée et les données publiques comme celles de l'INSEE. Ce goût pour la donnée au service du réel m'a naturellement orienté vers le secteur public, sans pour autant m'y enfermer. Je souhaite également apporter mes compétences à des organisations privées confrontées à des enjeux data concrets.</p>
+  </div>
+ 
+  <div class="apropos-stats">
+    <div class="stat-box">
+      <div class="stat-num">70k+</div>
+      <div class="stat-label">Observations analysées</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Expériences pro</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">5+</div>
+      <div class="stat-label">Langages maîtrisés</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Langues parlées</div>
+    </div>
+  </div>
+</div>
+ 
+<div class="divider"></div>
+ 
+<!-- PARCOURS -->
+<div class="section-wrap" id="parcours-wrap">
+  <span class="section-tag">Parcours</span>
+  <h2 class="section-title">Expériences<br/>professionnelles</h2>
+  <p class="parcours-intro">Deux expériences au sein de la Ville de Marseille, entre analyse statistique, automatisation de données et cartographie décisionnelle. Une première mission de terrain qui m'a permis de travailler sur la collecte, le traitement et la valorisation de données publiques, avant d'intégrer une nouvelle direction au sein de la même institution.</p>
+ 
+  <div class="parcours-banner">
+    <img src="photo2.jpg" alt="Ville de Marseille" />
+    <div class="parcours-banner-overlay">
+      <div class="parcours-banner-label">
+        <span>Employeur</span>
+        Ville de Marseille
+      </div>
+    </div>
+  </div>
+ 
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-meta">Avril 2025 &mdash; Septembre 2025 &nbsp;&middot;&nbsp; Stage</div>
+      <div class="tl-title">Chargé d'études statistiques et géomatiques</div>
+      <div class="tl-org">Ville de Marseille</div>
+      <p class="tl-body">Dans le cadre de mon stage de fin d'études, j'ai participé à plusieurs missions liées à la gestion et à l'exploitation de données territoriales et scolaires. Conception et déploiement d'un questionnaire numérique destiné aux coordinateurs d'écoles afin de réaliser un état des lieux des bâtiments scolaires, traitement et nettoyage des données collectées, analyses statistiques et représentations cartographiques sous QGIS, automatisation de tâches sous Excel et VBA, mise en place d'outils de publipostage et d'aide à la gestion documentaire.</p>
+    </div>
+  </div>
+ 
+  <p class="tl-transition">À l'issue de cette expérience, j'ai intégré une autre direction générale de la Ville de Marseille afin de poursuivre mon travail autour de la donnée publique et de l'analyse décisionnelle.</p>
+ 
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-meta">Octobre 2025 &mdash; Aujourd'hui</div>
+      <div class="tl-title">Chef de projet Data, statisticien</div>
+      <div class="tl-org">Ville de Marseille</div>
+      <p class="tl-body">Conception d'indicateurs statistiques pour le suivi de politiques publiques, intégration et structuration de données au sein du système d'information géographique (SIG), production d'analyses et restitution des résultats auprès des équipes concernées, participation à des projets d'aide à la décision basés sur la donnée territoriale.</p>
+    </div>
+  </div>
+ 
+  <!-- FORMATIONS -->
+  <div style="margin-top: 80px;">
+    <span class="section-tag">Formations</span>
+    <h3 class="section-title" style="font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 0;">Diplômes</h3>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-year">2023 &mdash; 2025</div>
+      <div class="edu-degree">Master Mathématiques Appliquées aux Statistiques</div>
+      <div class="edu-school">Aix-Marseille Université &mdash; Faculté des Sciences</div>
+      <p class="edu-desc">Formation orientée analyse statistique, modélisation, traitement de données et méthodes quantitatives appliquées.</p>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2019 &mdash; 2022</div>
+      <div class="edu-degree">Licence MIASHS &mdash; Mathématiques et Informatiques Appliquées aux Sciences Humaines</div>
+      <div class="edu-school">Aix-Marseille Université &mdash; Faculté des Sciences</div>
+      <p class="edu-desc">Parcours pluridisciplinaire mêlant mathématiques, informatique et analyse des phénomènes sociaux.</p>
+    </div>
+  </div>
+</div>
+ 
+<!-- COMPETENCES -->
+<div id="competences-outer">
+  <div class="section-wrap">
+    <span class="section-tag">Compétences</span>
+    <h2 class="section-title" style="color: var(--black);">Ce que je sais faire.</h2>
+    <p class="comp-intro">Mon parcours universitaire m'a principalement orienté vers l'analyse statistique, la recherche appliquée et l'exploitation de données territoriales. En parallèle, je continue à développer mes compétences de manière autonome à travers des outils complémentaires comme Python, Power BI ou le développement web.</p>
+ 
+    <div class="comp-block">
+      <div class="comp-block-title">Maîtrise</div>
+      <div class="skills-grid">
+        <div class="skill-card" onclick="skillOpenPopup('statistiques')">
+          <div class="skill-card-icon">&#128202;</div>
+          <div class="skill-card-title">Statistiques</div>
+          <div class="skill-tags">
+            <span class="stag stag-maitrise">R</span>
+            <span class="stag stag-maitrise">SAS</span>
+            <span class="stag stag-maitrise">SQL</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="skillOpenPopup('cartographie')">
+          <div class="skill-card-icon">🗺️</div>
+          <div class="skill-card-title">Cartographie</div>
+          <div class="skill-tags">
+            <span class="stag stag-maitrise">QGIS</span>
+            <span class="stag stag-maitrise">SIG</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="skillOpenPopup('bureautique')">
+          <div class="skill-card-icon">&#128200;</div>
+          <div class="skill-card-title">Bureautique</div>
+          <div class="skill-tags">
+            <span class="stag stag-maitrise">Excel avancé</span>
+            <span class="stag stag-maitrise">VBA</span>
+            <span class="stag stag-maitrise">PowerPoint</span>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <p class="skill-hint">&#8593; Clique sur une carte pour voir le détail des compétences</p>
+ 
+    <div class="comp-block">
+      <div class="comp-block-title">En progression</div>
+      <div class="skills-grid">
+        <div class="skill-card" onclick="skillOpenPopup('programmation')">
+          <div class="skill-card-icon">&#128187;</div>
+          <div class="skill-card-title">Programmation</div>
+          <div class="skill-tags">
+            <span class="stag stag-progress">Python</span>
+            <span class="stag stag-progress">Java</span>
+            <span class="stag stag-progress">HTML</span>
+            <span class="stag stag-progress">CSS</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="skillOpenPopup('databi')">
+          <div class="skill-card-icon">&#128201;</div>
+          <div class="skill-card-title">Data &amp; BI</div>
+          <div class="skill-tags">
+            <span class="stag stag-progress">Power BI</span>
+            <span class="stag stag-progress">NetLogo</span>
+          </div>
+        </div>
+        <div class="skill-card" onclick="skillOpenPopup('langues')">
+          <div class="skill-card-icon">&#127757;</div>
+          <div class="skill-card-title">Langues</div>
+          <div class="skill-tags">
+            <span class="stag stag-maitrise">Français (natif)</span>
+            <span class="stag stag-maitrise">Anglais B2</span>
+            <span class="stag stag-maitrise">Arabe B2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+  </div>
+</div>
+ 
+<!-- PROJETS -->
+<div class="section-wrap" id="projets-wrap">
+  <span class="section-tag">Projets universitaires</span>
+  <h2 class="section-title">Recherches &amp;<br/>travaux académiques</h2>
+  <p class="projets-intro">Au cours de mon parcours universitaire, j'ai eu l'opportunité de réaliser plusieurs travaux d'études et de recherche autour des statistiques, des dynamiques territoriales et des problématiques socio-économiques. Ces projets m'ont permis d'appliquer des méthodes statistiques concrètes à des problématiques territoriales, sociales et démographiques.</p>
+ 
+  <div class="projets-list">
+ 
+    <!-- ↓ Les liens pointent maintenant vers viewer.html avec les paramètres file= et title= -->
+    <a href="viewer.html?file=ter1.pdf&title=Analyse des flux domicile-travail au sein de la Ville de Marseille" target="_blank" class="projet-item">
+      <div class="projet-left">
+        <span class="projet-num">01</span>
+        <span class="projet-title">Analyse des flux domicile-travail au sein de la Ville de Marseille</span>
+      </div>
+      <span class="projet-arrow">&#8594; Consulter</span>
+    </a>
+ 
+    <a href="viewer.html?file=ter2.pdf&title=Audience des publications régionales de l'INSEE" target="_blank" class="projet-item">
+      <div class="projet-left">
+        <span class="projet-num">02</span>
+        <span class="projet-title">Audience des publications régionales de l'INSEE</span>
+      </div>
+      <span class="projet-arrow">&#8594; Consulter</span>
+    </a>
+ 
+    <a href="viewer.html?file=ter3.pdf&title=Les déserts médicaux — analyse des facteurs explicatifs en PACA" target="_blank" class="projet-item">
+      <div class="projet-left">
+        <span class="projet-num">03</span>
+        <span class="projet-title">Les déserts médicaux : analyse des facteurs explicatifs dans les bassins de vie de la région PACA</span>
+      </div>
+      <span class="projet-arrow">&#8594; Consulter</span>
+    </a>
+ 
+    <a href="viewer.html?file=ter4.pdf&title=Étude des équipements des ménages au Ghana" target="_blank" class="projet-item">
+      <div class="projet-left">
+        <span class="projet-num">04</span>
+        <span class="projet-title">Étude des équipements des ménages au Ghana</span>
+      </div>
+      <span class="projet-arrow">&#8594; Consulter</span>
+    </a>
+ 
+    <a href="viewer.html?file=ter5.pdf&title=Étude de la mobilité socio-professionnelle des immigrés" target="_blank" class="projet-item">
+      <div class="projet-left">
+        <span class="projet-num">05</span>
+        <span class="projet-title">Étude de la mobilité socio-professionnelle des immigrés</span>
+      </div>
+      <span class="projet-arrow">&#8594; Consulter</span>
+    </a>
+ 
+  </div>
+ 
+  <p class="projet-pdf-note">🔒 Documents consultables en lecture seule — © Hakim Zoghlami</p>
+</div>
+ 
+<div class="divider"></div>
+ 
+<!-- CONTACT -->
+<section id="contact">
+  <span class="section-tag">Contact</span>
+  <h2 class="section-title">Travaillons<br/>ensemble.</h2>
+  <p class="contact-text">Avec un an d'expérience et un parcours ancré dans la donnée publique, je construis progressivement mon expertise en data analysis et statistiques. Junior dans le titre mais rigoureux dans l'approche, je cherche des projets ambitieux où je peux apprendre vite, contribuer concrètement et évoluer dans la durée. Ouvert aux opportunités en data analysis, statistiques et aide à la décision, secteur public comme privé.</p>
+  <div class="contact-links">
+    <a href="mailto:zoghlami.hakim@gmail.com" class="contact-chip">&#9993;&#65039;&nbsp; zoghlami.hakim@gmail.com</a>
+    <a href="tel:0771166631" class="contact-chip">&#128222;&nbsp; 07 71 16 66 31</a>
+    <span class="contact-chip">&#128205;&nbsp; Marseille 13009</span>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  &copy; 2026 &nbsp;Hakim Zoghlami &nbsp;&middot;&nbsp; Data Analyst &nbsp;&middot;&nbsp; Marseille
+</footer>
+ 
+<!-- POPUP COMPÉTENCES -->
+<div id="skill-overlay" onclick="skillCloseOnBg(event)">
+  <div id="skill-popup">
+    <button class="sp-close" onclick="skillClosePopup()">✕</button>
+    <div class="sp-icon" id="sp-icon"></div>
+    <div class="sp-title" id="sp-title"></div>
+    <div class="sp-subtitle" id="sp-subtitle"></div>
+    <div id="sp-body"></div>
+  </div>
+</div>
+ 
+<script>
+/* ── Timeline scroll reveal ── */
+const items = document.querySelectorAll('.timeline-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 150);
+    }
+  });
+}, { threshold: 0.2 });
+items.forEach(el => observer.observe(el));
+ 
+/* ── Données des popups ── */
+const skillData = {
+  statistiques: {
+    icon: '📊', title: 'Statistiques', subtitle: 'R · SAS · SQL', type: 'blue',
+    sections: [
+      { label: 'Analyses descriptives', items: ['Étude univariée — distributions, indicateurs de tendance centrale et de dispersion','Étude bivariée — corrélations, tableaux croisés, nuages de points','Test du khi-deux — indépendance entre variables catégorielles'] },
+      { label: 'Modélisation statistique', items: ['Régression linéaire simple et multiple','Régression logistique binaire et multinomiale','Analyse en Composantes Principales normée (ACP)','Analyse des Correspondances Multiples (ACM)','Analyse Factorielle des Correspondances (AFC)','Classification Ascendante Hiérarchique (CAH)'] },
+      { label: 'Automatisation & production', items: ['Création de fonctions R/SAS réutilisables pour des analyses répétitives','Requêtage et manipulation de données via SQL','Production de rapports statistiques reproductibles'] }
+    ]
+  },
+  cartographie: {
+    icon: '🗺️', title: 'Cartographie', subtitle: 'QGIS · SIG · Leaflet.js', type: 'blue',
+    sections: [
+      { label: 'Traitements géospatiaux', items: ['Géocodage de points — conversion d\'adresses en coordonnées géographiques','Jointures spatiales et croisement de couches vectorielles','Découpage territorial par IRIS, arrondissement, canton ou bassin de vie','Reprojection de systèmes de coordonnées (Lambert 93, WGS84, RGF93…)'] },
+      { label: 'Visualisation cartographique', items: ['Cartes choroplèthes pour des données statistiques territorialisées','Cartes de flux domicile-travail et mobilités','Cartes interactives web avec Leaflet.js et OpenStreetMap','Mise en page professionnelle et export cartographique sous QGIS'] },
+      { label: 'Applications concrètes réalisées', items: ['Cartographie des déserts médicaux dans les bassins de vie PACA','Analyse spatiale des équipements scolaires dans le cadre du Plan Écoles','Représentation de données INSEE à l\'échelle du territoire marseillais'] }
+    ]
+  },
+  bureautique: {
+    icon: '📈', title: 'Bureautique', subtitle: 'Excel · VBA · Microsoft 365', type: 'blue',
+    sections: [
+      { label: 'Excel avancé', items: ['Formules complexes — INDEX/EQUIV, RECHERCHEX, NB.SI.ENS, DECALER…','Tableaux croisés dynamiques avec segments et chronologies','Mise en forme conditionnelle avancée et sparklines','Power Query pour l\'import, la transformation et le nettoyage de données'] },
+      { label: 'Automatisation VBA', items: ['Création de macros pour automatiser des tâches répétitives','Interfaces utilisateur — UserForms, boutons, menus déroulants','Transferts et synchronisations de données entre feuilles par code','Génération automatique de documents Word via publipostage piloté par VBA'] },
+      { label: 'Environnement Microsoft 365', items: ['Maîtrise complète de la suite Microsoft 365 (Word, Excel, PowerPoint, Outlook)','Création de modèles PowerPoint structurés pour la restitution de résultats','Gestion documentaire et publipostage en masse'] }
+    ]
+  },
+  programmation: {
+    icon: '💻', title: 'Programmation', subtitle: 'Python · HTML · CSS · Java', type: 'purple',
+    sections: [
+      { label: 'Développement web', items: ['Création de pages web statiques en HTML/CSS — comme ce portfolio','Intégration de cartes interactives avec Leaflet.js','Animations CSS et responsive design (mobile/tablette/desktop)','Hébergement et déploiement sur GitHub Pages'] },
+      { label: 'Python', items: ['Scripts d\'automatisation légère — renommage, transformation, export de fichiers','Manipulation et analyse de données avec pandas','Génération de visualisations avec matplotlib et seaborn','Web scraping basique avec BeautifulSoup'] },
+      { label: 'En cours d\'apprentissage', items: ['Développement d\'applications web légères avec Flask','Interactions avec des APIs REST (requêtes GET/POST, JSON)','Notions de Java — programmation orientée objet'] }
+    ]
+  },
+  databi: {
+    icon: '📉', title: 'Data & BI', subtitle: 'Power BI · NetLogo · Visualisation', type: 'purple',
+    sections: [
+      { label: 'Business Intelligence', items: ['Création de tableaux de bord interactifs sous Power BI','Modélisation de données — relations entre tables, mesures DAX','Visualisation de KPIs pour faciliter la prise de décision'] },
+      { label: 'Simulation multi-agents', items: ['Simulation de comportements collectifs avec NetLogo','Modélisation de phénomènes sociaux, urbains et démographiques','Analyse de comportements émergents à partir de règles locales simples'] },
+      { label: 'Dataviz & communication', items: ['Choix du bon type de graphique selon le message à transmettre','Simplification visuelle de données complexes pour des publics non techniques','Restitution de résultats d\'analyse à des décideurs publics'] }
+    ]
+  },
+  langues: {
+    icon: '🌍', title: 'Langues', subtitle: 'Français · Anglais · Arabe', type: 'blue',
+    sections: [
+      { label: 'Compétences linguistiques', items: ['Français — Langue natale, rédaction professionnelle et académique de niveau avancé','Anglais B2 — Lecture de documentation technique, communication écrite, compréhension orale','Arabe B2 — Compréhension orale et écrite, expression courante'] }
+    ]
+  }
+};
+ 
+function skillOpenPopup(key) {
+  const d = skillData[key];
+  document.getElementById('sp-icon').textContent = d.icon;
+  document.getElementById('sp-title').textContent = d.title;
+  document.getElementById('sp-subtitle').textContent = d.subtitle;
+  let html = '';
+  d.sections.forEach((sec, i) => {
+    if (i > 0) html += '<hr class="sp-divider">';
+    html += `<div class="sp-sec-label">${sec.label}</div>`;
+    html += `<ul class="sp-list ${d.type === 'purple' ? 'purple' : ''}">`;
+    sec.items.forEach(item => { html += `<li>${item}</li>`; });
+    html += '</ul>';
+  });
+  document.getElementById('sp-body').innerHTML = html;
+  document.getElementById('skill-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+ 
+function skillClosePopup() {
+  document.getElementById('skill-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+ 
+function skillCloseOnBg(e) {
+  if (e.target === document.getElementById('skill-overlay')) skillClosePopup();
+}
+ 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') skillClosePopup();
+});
+</script>
+ 
+</body>
+</html>
