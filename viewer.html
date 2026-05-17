@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<!-- On retire user-scalable=no pour autoriser le zoom pinch sur mobile -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
 <title>Visualisation — Hakim Zoghlami</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -20,7 +19,6 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
 }
 
 .topbar {
@@ -104,22 +102,11 @@ body {
   gap: 10px;
 }
 
-/* Petit hint mobile */
-.mobile-hint {
-  display: none;
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.2);
-}
-
-@media (max-width: 768px) {
-  .mobile-hint { display: inline; }
-}
-
-/* ── ZONE DE SCROLL ── */
+/* ── ZONE DE SCROLL : scroll dans les deux sens ── */
 .pdf-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: auto; /* scroll horizontal aussi pour zoomer */
+  overflow-x: auto;
   background: #2a2a2a;
   display: flex;
   flex-direction: column;
@@ -129,21 +116,21 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ── CHAQUE PAGE ── */
+/* ── CHAQUE PAGE : taille fixe large pour la qualité ── */
 .page-wrap {
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.6);
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
-  /* Sur mobile : largeur fixe plus grande pour lisibilité */
-  width: 100%;
-  max-width: 900px;
+  /* Largeur fixe : suffisamment grande pour être lisible */
+  width: 900px;
 }
 
+/* Le canvas remplit son conteneur */
 .page-wrap canvas {
   display: block;
-  width: 100%;
+  width: 900px;
   height: auto;
 }
 
@@ -163,7 +150,7 @@ body {
 .wm-text {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
-  font-size: clamp(1.4rem, 5vw, 2.6rem);
+  font-size: 2.2rem;
   color: rgba(0, 113, 227, 0.18);
   letter-spacing: 6px;
   text-transform: uppercase;
@@ -193,7 +180,7 @@ body {
   .topbar { padding: 10px 12px; }
   .doc-title { display: none; }
   .confidential-badge { display: none; }
-  .pdf-scroll { padding: 12px 8px; gap: 12px; }
+  .pdf-scroll { padding: 12px 4px; gap: 12px; }
 }
 </style>
 </head>
@@ -212,7 +199,6 @@ body {
 
 <div class="pagebar">
   <span id="page-info">Chargement…</span>
-  <span class="mobile-hint">· Pince pour zoomer</span>
 </div>
 
 <div class="pdf-scroll" id="pdf-scroll">
@@ -232,45 +218,43 @@ body {
   const title  = params.get('title') || 'Document';
   document.getElementById('doc-title').textContent = title;
 
-  /* ── Résolution :
-     On multiplie par devicePixelRatio pour que sur les écrans Retina/OLED
-     le canvas soit rendu en haute résolution (2x ou 3x sur iPhone) ── */
-  function getScale() {
-    const dpr       = window.devicePixelRatio || 1;
-    const container = document.getElementById('pdf-scroll');
-    /* Sur mobile on rend à 800px minimum pour avoir assez de pixels */
-    const available = Math.max(container.clientWidth - 32, 800);
-    const base      = Math.min(available, 900) / 595;
-    return base * dpr; /* échelle haute résolution */
-  }
+  /* ── Échelle fixe :
+     On rend toujours à 900px de large (taille CSS du .page-wrap)
+     multipliée par devicePixelRatio pour la netteté sur écrans Retina.
+     Résultat : sur iPhone 14 (dpr=3), le canvas fait 2700px de large → très net. ── */
+  const CSS_WIDTH = 900;    /* largeur CSS affichée */
+  const dpr       = Math.min(window.devicePixelRatio || 1, 3); /* max 3x */
+  const A4_PT     = 595;    /* largeur A4 en points PDF */
+  const SCALE     = (CSS_WIDTH / A4_PT) * dpr;
 
   function createWatermarks() {
     const container = document.createElement('div');
     container.className = 'wm-container';
-    for (let i = 0; i < 3; i++) {
+    ['© Hakim Zoghlami', '© Hakim Zoghlami', '© Hakim Zoghlami'].forEach(txt => {
       const wm = document.createElement('div');
       wm.className = 'wm-text';
-      wm.textContent = '© Hakim Zoghlami';
+      wm.textContent = txt;
       container.appendChild(wm);
-    }
+    });
     return container;
   }
 
-  async function renderPageInWrap(pdf, num, scale) {
-    const dpr      = window.devicePixelRatio || 1;
+  async function renderPageInWrap(pdf, num) {
     const page     = await pdf.getPage(num);
-    const viewport = page.getViewport({ scale });
+    const viewport = page.getViewport({ scale: SCALE });
 
     const wrap = document.createElement('div');
     wrap.className = 'page-wrap';
 
     const canvas = document.createElement('canvas');
-    /* Le canvas est grand (haute résolution) mais affiché à taille CSS normale */
+    /* Taille réelle du canvas = haute résolution */
     canvas.width  = viewport.width;
     canvas.height = viewport.height;
-    /* On force la taille CSS à la largeur logique (sans le dpr) */
-    canvas.style.width  = (viewport.width / dpr) + 'px';
-    canvas.style.height = (viewport.height / dpr) + 'px';
+    /* Taille CSS = largeur normale lisible */
+    canvas.style.width  = CSS_WIDTH + 'px';
+    canvas.style.height = Math.round(viewport.height / dpr) + 'px';
+
+    wrap.style.height = Math.round(viewport.height / dpr) + 'px';
 
     wrap.appendChild(canvas);
     wrap.appendChild(createWatermarks());
@@ -283,14 +267,13 @@ body {
 
   pdfjsLib.getDocument(file).promise.then(async pdf => {
     const total  = pdf.numPages;
-    const scale  = getScale();
     const scroll = document.getElementById('pdf-scroll');
 
     document.getElementById('page-info').textContent =
       `${total} page${total > 1 ? 's' : ''} — Faites défiler pour lire`;
 
     for (let i = 1; i <= total; i++) {
-      const wrap = await renderPageInWrap(pdf, i, scale);
+      const wrap = await renderPageInWrap(pdf, i);
       if (i === 1) document.getElementById('loading-msg').remove();
       scroll.appendChild(wrap);
     }
