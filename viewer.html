@@ -2,13 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
+<!-- On retire user-scalable=no pour autoriser le zoom pinch sur mobile -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Visualisation — Hakim Zoghlami</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
- 
+
 body {
   font-family: 'Inter', sans-serif;
   background: #1a1a1a;
@@ -21,7 +22,7 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
 }
- 
+
 .topbar {
   display: flex;
   align-items: center;
@@ -32,9 +33,9 @@ body {
   flex-shrink: 0;
   z-index: 10;
 }
- 
+
 .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
- 
+
 .back-btn {
   display: flex;
   align-items: center;
@@ -53,7 +54,7 @@ body {
   flex-shrink: 0;
 }
 .back-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
- 
+
 .doc-title {
   font-family: 'Syne', sans-serif;
   font-size: 0.82rem;
@@ -63,9 +64,9 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
- 
+
 .topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
- 
+
 .confidential-badge {
   display: flex;
   align-items: center;
@@ -81,7 +82,7 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
- 
+
 .logo {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -89,7 +90,7 @@ body {
   letter-spacing: 2px;
   color: #0071e3;
 }
- 
+
 .pagebar {
   display: flex;
   align-items: center;
@@ -100,12 +101,25 @@ body {
   flex-shrink: 0;
   font-size: 0.72rem;
   color: rgba(255,255,255,0.3);
+  gap: 10px;
 }
- 
+
+/* Petit hint mobile */
+.mobile-hint {
+  display: none;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.2);
+}
+
+@media (max-width: 768px) {
+  .mobile-hint { display: inline; }
+}
+
+/* ── ZONE DE SCROLL ── */
 .pdf-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto; /* scroll horizontal aussi pour zoomer */
   background: #2a2a2a;
   display: flex;
   flex-direction: column;
@@ -114,24 +128,26 @@ body {
   gap: 20px;
   -webkit-overflow-scrolling: touch;
 }
- 
-/* Le wrapper de chaque page est en position relative */
+
+/* ── CHAQUE PAGE ── */
 .page-wrap {
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.6);
   border-radius: 4px;
   overflow: hidden;
-  max-width: 100%;
   flex-shrink: 0;
+  /* Sur mobile : largeur fixe plus grande pour lisibilité */
+  width: 100%;
+  max-width: 900px;
 }
- 
+
 .page-wrap canvas {
   display: block;
-  max-width: 100%;
+  width: 100%;
   height: auto;
 }
- 
-/* Conteneur des filigranes par-dessus le canvas */
+
+/* Filigranes */
 .wm-container {
   position: absolute;
   inset: 0;
@@ -143,7 +159,7 @@ body {
   align-items: center;
   padding: 8% 0;
 }
- 
+
 .wm-text {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -154,14 +170,14 @@ body {
   white-space: nowrap;
   transform: rotate(-35deg);
 }
- 
+
 .loading-msg {
   color: rgba(255,255,255,0.35);
   font-size: 0.88rem;
   text-align: center;
   padding: 60px 20px;
 }
- 
+
 .bottombar {
   flex-shrink: 0;
   text-align: center;
@@ -172,7 +188,7 @@ body {
   color: rgba(255,255,255,0.18);
   letter-spacing: 1px;
 }
- 
+
 @media (max-width: 600px) {
   .topbar { padding: 10px 12px; }
   .doc-title { display: none; }
@@ -182,7 +198,7 @@ body {
 </style>
 </head>
 <body>
- 
+
 <div class="topbar">
   <div class="topbar-left">
     <a class="back-btn" onclick="history.back()">← Retour</a>
@@ -193,34 +209,41 @@ body {
     <span class="logo">HZ</span>
   </div>
 </div>
- 
+
 <div class="pagebar">
   <span id="page-info">Chargement…</span>
+  <span class="mobile-hint">· Pince pour zoomer</span>
 </div>
- 
+
 <div class="pdf-scroll" id="pdf-scroll">
   <div class="loading-msg" id="loading-msg">⏳ Chargement du document…</div>
 </div>
- 
+
 <div class="bottombar">
   © Hakim Zoghlami &nbsp;·&nbsp; Document confidentiel &nbsp;·&nbsp; Reproduction interdite
 </div>
- 
+
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
- 
+
   const params = new URLSearchParams(window.location.search);
   const file   = params.get('file')  || '';
   const title  = params.get('title') || 'Document';
   document.getElementById('doc-title').textContent = title;
- 
+
+  /* ── Résolution :
+     On multiplie par devicePixelRatio pour que sur les écrans Retina/OLED
+     le canvas soit rendu en haute résolution (2x ou 3x sur iPhone) ── */
   function getScale() {
-    const w = Math.min(document.getElementById('pdf-scroll').clientWidth - 32, 900);
-    return w / 595;
+    const dpr       = window.devicePixelRatio || 1;
+    const container = document.getElementById('pdf-scroll');
+    /* Sur mobile on rend à 800px minimum pour avoir assez de pixels */
+    const available = Math.max(container.clientWidth - 32, 800);
+    const base      = Math.min(available, 900) / 595;
+    return base * dpr; /* échelle haute résolution */
   }
- 
-  /* Crée un bloc filigrane avec 3 textes répartis haut/milieu/bas */
+
   function createWatermarks() {
     const container = document.createElement('div');
     container.className = 'wm-container';
@@ -232,47 +255,51 @@ body {
     }
     return container;
   }
- 
+
   async function renderPageInWrap(pdf, num, scale) {
+    const dpr      = window.devicePixelRatio || 1;
     const page     = await pdf.getPage(num);
     const viewport = page.getViewport({ scale });
- 
+
     const wrap = document.createElement('div');
     wrap.className = 'page-wrap';
- 
-    const canvas  = document.createElement('canvas');
+
+    const canvas = document.createElement('canvas');
+    /* Le canvas est grand (haute résolution) mais affiché à taille CSS normale */
     canvas.width  = viewport.width;
     canvas.height = viewport.height;
+    /* On force la taille CSS à la largeur logique (sans le dpr) */
+    canvas.style.width  = (viewport.width / dpr) + 'px';
+    canvas.style.height = (viewport.height / dpr) + 'px';
+
     wrap.appendChild(canvas);
- 
-    /* Filigranes par-dessus */
     wrap.appendChild(createWatermarks());
- 
+
     const ctx = canvas.getContext('2d');
     await page.render({ canvasContext: ctx, viewport }).promise;
- 
+
     return wrap;
   }
- 
+
   pdfjsLib.getDocument(file).promise.then(async pdf => {
     const total  = pdf.numPages;
     const scale  = getScale();
     const scroll = document.getElementById('pdf-scroll');
- 
+
     document.getElementById('page-info').textContent =
       `${total} page${total > 1 ? 's' : ''} — Faites défiler pour lire`;
- 
+
     for (let i = 1; i <= total; i++) {
       const wrap = await renderPageInWrap(pdf, i, scale);
       if (i === 1) document.getElementById('loading-msg').remove();
       scroll.appendChild(wrap);
     }
- 
+
   }).catch(() => {
     document.getElementById('loading-msg').textContent = '❌ Impossible de charger le document.';
     document.getElementById('page-info').textContent = '';
   });
- 
+
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('keydown', e => {
     const blocked = ['s','p','u','a','c'];
@@ -289,6 +316,6 @@ body {
   document.addEventListener('selectstart', e => e.preventDefault());
   document.addEventListener('dragstart',   e => e.preventDefault());
 </script>
- 
+
 </body>
 </html>
