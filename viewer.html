@@ -99,38 +99,37 @@ body {
   flex-shrink: 0;
   font-size: 0.72rem;
   color: rgba(255,255,255,0.3);
-  gap: 10px;
 }
 
-/* ── ZONE DE SCROLL : scroll dans les deux sens ── */
+/* ── ZONE DE SCROLL ── */
 .pdf-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   background: #2a2a2a;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 16px;
-  gap: 20px;
+  padding: 20px 12px;
+  gap: 16px;
   -webkit-overflow-scrolling: touch;
 }
 
-/* ── CHAQUE PAGE : taille fixe large pour la qualité ── */
+/* ── CHAQUE PAGE : prend toute la largeur dispo ── */
 .page-wrap {
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.6);
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
-  /* Largeur fixe : suffisamment grande pour être lisible */
-  width: 900px;
+  width: 100%; /* s'adapte à l'écran */
+  max-width: 900px;
 }
 
-/* Le canvas remplit son conteneur */
+/* Le canvas s'adapte à son conteneur */
 .page-wrap canvas {
   display: block;
-  width: 900px;
+  width: 100%;
   height: auto;
 }
 
@@ -150,9 +149,9 @@ body {
 .wm-text {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
-  font-size: 2.2rem;
+  font-size: clamp(1rem, 4vw, 2.2rem);
   color: rgba(0, 113, 227, 0.18);
-  letter-spacing: 6px;
+  letter-spacing: 5px;
   text-transform: uppercase;
   white-space: nowrap;
   transform: rotate(-35deg);
@@ -180,7 +179,7 @@ body {
   .topbar { padding: 10px 12px; }
   .doc-title { display: none; }
   .confidential-badge { display: none; }
-  .pdf-scroll { padding: 12px 4px; gap: 12px; }
+  .pdf-scroll { padding: 10px 6px; gap: 10px; }
 }
 </style>
 </head>
@@ -218,43 +217,41 @@ body {
   const title  = params.get('title') || 'Document';
   document.getElementById('doc-title').textContent = title;
 
-  /* ── Échelle fixe :
-     On rend toujours à 900px de large (taille CSS du .page-wrap)
-     multipliée par devicePixelRatio pour la netteté sur écrans Retina.
-     Résultat : sur iPhone 14 (dpr=3), le canvas fait 2700px de large → très net. ── */
-  const CSS_WIDTH = 900;    /* largeur CSS affichée */
-  const dpr       = Math.min(window.devicePixelRatio || 1, 3); /* max 3x */
-  const A4_PT     = 595;    /* largeur A4 en points PDF */
-  const SCALE     = (CSS_WIDTH / A4_PT) * dpr;
+  /* ── Calcul de l'échelle :
+     - On prend la largeur réelle disponible dans le scroll
+     - On multiplie par devicePixelRatio pour la netteté (max 2x pour ne pas surcharger)
+     - Le canvas est rendu grand mais affiché à 100% width via CSS → net ET qui rentre dans l'écran ── */
+  function getScale() {
+    const scroll    = document.getElementById('pdf-scroll');
+    const cssWidth  = Math.min(scroll.clientWidth - 24, 900); /* largeur CSS dispo */
+    const dpr       = Math.min(window.devicePixelRatio || 1, 2); /* max 2x */
+    return (cssWidth / 595) * dpr; /* 595pt = largeur A4 */
+  }
 
   function createWatermarks() {
     const container = document.createElement('div');
     container.className = 'wm-container';
-    ['© Hakim Zoghlami', '© Hakim Zoghlami', '© Hakim Zoghlami'].forEach(txt => {
+    for (let i = 0; i < 3; i++) {
       const wm = document.createElement('div');
       wm.className = 'wm-text';
-      wm.textContent = txt;
+      wm.textContent = '© Hakim Zoghlami';
       container.appendChild(wm);
-    });
+    }
     return container;
   }
 
-  async function renderPageInWrap(pdf, num) {
+  async function renderPageInWrap(pdf, num, scale) {
     const page     = await pdf.getPage(num);
-    const viewport = page.getViewport({ scale: SCALE });
+    const viewport = page.getViewport({ scale });
 
-    const wrap = document.createElement('div');
+    const wrap   = document.createElement('div');
     wrap.className = 'page-wrap';
 
     const canvas = document.createElement('canvas');
-    /* Taille réelle du canvas = haute résolution */
+    /* Taille réelle du canvas = haute résolution (dpr inclus) */
     canvas.width  = viewport.width;
     canvas.height = viewport.height;
-    /* Taille CSS = largeur normale lisible */
-    canvas.style.width  = CSS_WIDTH + 'px';
-    canvas.style.height = Math.round(viewport.height / dpr) + 'px';
-
-    wrap.style.height = Math.round(viewport.height / dpr) + 'px';
+    /* CSS : width=100% via la classe, height=auto → s'adapte et reste net */
 
     wrap.appendChild(canvas);
     wrap.appendChild(createWatermarks());
@@ -267,13 +264,14 @@ body {
 
   pdfjsLib.getDocument(file).promise.then(async pdf => {
     const total  = pdf.numPages;
+    const scale  = getScale();
     const scroll = document.getElementById('pdf-scroll');
 
     document.getElementById('page-info').textContent =
       `${total} page${total > 1 ? 's' : ''} — Faites défiler pour lire`;
 
     for (let i = 1; i <= total; i++) {
-      const wrap = await renderPageInWrap(pdf, i);
+      const wrap = await renderPageInWrap(pdf, i, scale);
       if (i === 1) document.getElementById('loading-msg').remove();
       scroll.appendChild(wrap);
     }
